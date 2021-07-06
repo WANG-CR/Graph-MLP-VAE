@@ -52,35 +52,53 @@ adj_label = get_A_r(adj, args.order)
 
 
 ## Model and optimizer
-model = GMLP(nfeat=features.shape[1],
-            nhid=args.hidden,
-            nclass=labels.max().item() + 1,
-            dropout=args.dropout,
-            )
-optimizer = optim.Adam(model.parameters(),
-                       lr=args.lr, weight_decay=args.weight_decay)
+model = GMLP(
+    nfeat=features.shape[1],
+    nhid=args.hidden,
+    nclass=labels.max().item() + 1,
+    dropout=args.dropout,
+)
+
+optimizer = optim.Adam(
+    model.parameters(), 
+    lr=args.lr, 
+    weight_decay=args.weight_decay
+)
                        
 ##modelVAE and Optimizer                       
-modelVAE = VAE(nfeat=features.shape[1],
-              nhid=args.hidden,
-              nclass=labels.max().item() + 1,
-              nlatent=10,
-              dropout=args.dropout,
-              )
-optimizerVAE = optim.Adam(modelVAE.parameters(),
-                         lr=args.lr, weight_decay=args.weight_decay)
+modelVAE = VAE(
+    nfeat=features.shape[1],
+    nhid=args.hidden,
+    nclass=labels.max().item() + 1,
+    nlatent=10,
+    dropout=args.dropout,
+)
 
-optimizerClassifier = optim.Adam(filter(lambda p: p.requires_grad, modelVAE.parameters()),
-                         lr=10*args.lr, weight_decay=args.weight_decay)
+optimizerVAE = optim.Adam(
+    modelVAE.parameters(),
+    lr=args.lr, 
+    weight_decay=args.weight_decay
+)
+
+optimizerClassifier = optim.Adam(
+    filter(lambda p: p.requires_grad, modelVAE.parameters()),
+    lr=10*args.lr, 
+    weight_decay=args.weight_decay
+)
 
 #a simple MLP
-modelMLP = MLPsimple(nfeat=features.shape[1],
-                    nhid=args.hidden,
-                    nclass=labels.max().item() + 1,
-                    dropout=args.dropout,
-                    )
-optimizerMLP = optim.Adam(modelMLP.parameters(),
-                         lr=args.lr, weight_decay=args.weight_decay)
+modelMLP = MLPsimple(
+    nfeat=features.shape[1],
+    nhid=args.hidden,
+    nclass=labels.max().item() + 1,
+    dropout=args.dropout,
+)
+
+optimizerMLP = optim.Adam(
+    modelMLP.parameters(),
+    lr=args.lr, 
+    weight_decay=args.weight_decay
+)
 
 if args.cuda:
     model.cuda()
@@ -135,7 +153,7 @@ def get_batch(batch_size):
     """
     rand_indx = torch.tensor(np.random.choice(np.arange(adj_label.shape[0]), batch_size)).cuda()
     rand_indx[0:len(idx_train)] = idx_train
-    rand_indx=rand_indx.type(torch.LongTensor)
+    rand_indx = rand_indx.type(torch.LongTensor)
     ## idx_train: [0::139]
     # print(features)
     features_batch = features[rand_indx]
